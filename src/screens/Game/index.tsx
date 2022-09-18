@@ -1,6 +1,6 @@
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GameParams } from '../../@types/navigation';
 import { Background } from '../../components/Background';
@@ -8,12 +8,17 @@ import { THEME } from '../../theme';
 
 import { styles } from './styles';
 
+import { useEffect, useState } from 'react';
 import logoImg from '../../assets/logo-nlw-esports.png';
+import { DuoCard, DuoCardProps } from '../../components/DuoCard';
 import { Heading } from '../../components/Heading';
 
 
 
 export function Game() {
+
+  const route = useRoute()
+  const game = route.params as GameParams
 
   const navigation = useNavigation()
 
@@ -21,8 +26,14 @@ export function Game() {
     navigation.goBack()
   }
 
-  const route = useRoute()
-  const game = route.params as GameParams
+  const [duos, setDuos] = useState<DuoCardProps[]>([])
+
+  useEffect(() => {
+    fetch(`http://192.168.0.25:3000/ads/${game.id}`)
+      .then(response => response.json())
+      .then(data => setDuos(data))
+  }, [])
+
   return (
     <Background>
       <SafeAreaView style={styles.container}>
@@ -54,6 +65,25 @@ export function Game() {
           title={game.title}
           subtitle="Conecte-se e comece a jogar!" />
 
+        <FlatList
+          data={duos}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <DuoCard
+              data={duos[0]}
+              onConnect={() => { }}
+            />
+          )}
+          style={styles.containerList}
+          horizontal
+          contentContainerStyle={[duos.length > 0 ? styles.contentList : styles.emptyListContent]}
+          showsHorizontalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <Text style={styles.emptyText}>
+              Não Há anúncios publicados ainda.
+            </Text>
+          )}
+        />
       </SafeAreaView>
     </Background>
   );
