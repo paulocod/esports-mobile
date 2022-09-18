@@ -33,7 +33,7 @@ export function DuoCard({ data, onConnect }: Props) {
         value={`${data.yearsPlaying} anos`} />
       <DuoInfo
         label='Disponibilidade'
-        value={`${data.weekDays} dias \u2022 ${data.hoursStart} - ${data.hourEnd}`} />
+        value={`${data.weekDays.length} dias \u2022 ${data.hoursStart} - ${data.hourEnd}`} />
       <DuoInfo
         label='Chamada de áudio'
         value={data.useVoiceChannel ? "Sim" : "Não"}
